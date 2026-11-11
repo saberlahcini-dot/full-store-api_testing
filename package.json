@@ -1,0 +1,22 @@
+{
+  "name": "fake-store-api-testing",
+  "version": "1.0.0",
+  "private": true,
+  "description": "API test framework for Fake Store API using Playwright and Postman/Newman",
+  "scripts": {
+    "test": "playwright test",
+    "test:api": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:postman": "newman run postman/FakeStoreAPI.postman_collection.json -e postman/FakeStoreAPI.postman_environment.json",
+    "test:all": "npm run test:api && npm run test:postman",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "dotenv": "^16.4.7",
+    "newman": "^6.2.1"
+  },
+  "overrides": {
+    "handlebars": "^4.7.10"
+  }
+}

@@ -1,0 +1,118 @@
+    {
+    "info": {
+        "_postman_id": "5d62dff0-ae85-481c-aec0-5dbeb795e77b",
+        "name": "Fake Store API",
+        "description": "Read-only API contract checks and an optional credential-based login check.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+        "name": "Products",
+        "item": [
+            {
+            "name": "List products",
+            "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/products?limit=5" },
+            "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+                "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                "const body = pm.response.json();",
+                "pm.test('response is a non-empty product array', () => { pm.expect(body).to.be.an('array').that.is.not.empty; });",
+                "pm.test('products have required fields', () => { body.forEach((product) => { pm.expect(product).to.have.property('id').that.is.a('number'); pm.expect(product).to.have.property('title').that.is.a('string'); pm.expect(product).to.have.property('price').that.is.a('number'); pm.expect(product).to.have.property('category').that.is.a('string'); }); });"
+            ] } }],
+            "response": []
+            },
+            {
+            "name": "Get product by ID",
+            "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/products/1" },
+            "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+                "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                "const body = pm.response.json();",
+                "pm.test('product ID and fields are valid', () => { pm.expect(body.id).to.eql(1); pm.expect(body.title).to.be.a('string').and.not.empty; pm.expect(body.price).to.be.a('number'); });"
+            ] } }],
+            "response": []
+            },
+            {
+            "name": "List product categories",
+            "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/products/categories" },
+            "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+                "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                "const body = pm.response.json();",
+                "pm.test('categories are a non-empty list of strings', () => { pm.expect(body).to.be.an('array').that.is.not.empty; body.forEach((category) => pm.expect(category).to.be.a('string')); });"
+            ] } }],
+            "response": []
+            }
+        ]
+        },
+        {
+        "name": "Carts and users",
+        "item": [
+            {
+            "name": "List carts",
+            "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/carts" },
+            "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+                "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                "const body = pm.response.json();",
+                "pm.test('carts contain user IDs and product arrays', () => { pm.expect(body).to.be.an('array').that.is.not.empty; body.forEach((cart) => { pm.expect(cart.id).to.be.a('number'); pm.expect(cart.userId).to.be.a('number'); pm.expect(cart.products).to.be.an('array'); }); });"
+            ] } }],
+            "response": []
+            },
+            {
+            "name": "Get cart by ID",
+            "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/carts/1" },
+            "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+                "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                "const body = pm.response.json();",
+                "pm.test('cart ID and products are valid', () => { pm.expect(body.id).to.eql(1); pm.expect(body.products).to.be.an('array'); });"
+            ] } }],
+            "response": []
+            },
+            {
+            "name": "List users",
+            "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/users" },
+            "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+                "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                "const body = pm.response.json();",
+                "pm.test('users contain valid IDs, names, and emails', () => { pm.expect(body).to.be.an('array').that.is.not.empty; body.forEach((user) => { pm.expect(user.id).to.be.a('number'); pm.expect(user.username).to.be.a('string').and.not.empty; pm.expect(user.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/); }); });"
+            ] } }],
+            "response": []
+            },
+            {
+            "name": "Get user by ID",
+            "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/users/1" },
+            "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+                "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                "const body = pm.response.json();",
+                "pm.test('user ID and email are valid', () => { pm.expect(body.id).to.eql(1); pm.expect(body.email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/); });"
+            ] } }],
+            "response": []
+            }
+        ]
+        },
+        {
+        "name": "Authentication",
+        "item": [
+            {
+            "name": "Login (configure username and password first)",
+            "event": [
+                { "listen": "prerequest", "script": { "type": "text/javascript", "exec": [
+                "if (!pm.environment.get('username') || !pm.environment.get('password')) {",
+                "  console.warn('Skipping login: configure username and password in the selected environment.');",
+                "  pm.execution.skipRequest();",
+                "}"
+                ] } },
+                { "listen": "test", "script": { "type": "text/javascript", "exec": [
+                "pm.test('status is 200', () => pm.response.to.have.status(200));",
+                "pm.test('response contains a token', () => pm.expect(pm.response.json().token).to.be.a('string').and.not.empty);"
+                ] } }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": { "mode": "raw", "raw": "{\n  \"username\": \"{{username}}\",\n  \"password\": \"{{password}}\"\n}", "options": { "raw": { "language": "json" } } },
+                "url": "{{baseUrl}}/auth/login"
+            },
+            "response": []
+            }
+        ]
+        }
+    ]
+    }
