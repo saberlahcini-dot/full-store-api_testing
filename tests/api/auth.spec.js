@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 
     test('POST /auth/login returns a token when credentials are configured', async ({ request }) => {
     const { API_USERNAME: username, API_PASSWORD: password } = process.env;
-    test.skip(!username || !password, 'Set API_USERNAME and API_PASSWORD to run this test.');
+    test.skip(!username || !password, 'Set API_USERNAME and API_PASSWORD to run this test. ');
 
     const response = await request.post('/auth/login', {
         data: { username, password }
